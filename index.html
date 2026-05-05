@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>International Shock Monitor</title>
+
+  <style>
+    :root {
+      --bg: #e9eef5;
+      --card: #ffffff;
+      --wrapper-bg: #F1F3F6;
+      --text: #1f2937;
+      --muted: #64748b;
+      --heading: #0b2745;
+      --border: #b8c9dc;
+      --border-soft: #d4e0ec;
+      --accent: #0f4c81;
+      --accent-bg: #e4f0fb;
+      --navy: #0f172a;
+      --navy-soft: #162338;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.09);
+      --ticker-height: 46px;
+      --nav-height: 52px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .institution-header {
+      background: var(--navy);
+      color: #ffffff;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .institution-header-inner {
+      width: 100%;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 80px;
+    }
+
+    .institution-logo {
+      width: 245px;
+      height: auto;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .institution-title {
+      text-align: right;
+      margin-left: auto;
+    }
+
+    .institution-title h1 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: 0.01em;
+      color: #ffffff;
+    }
+
+    .institution-title p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+
+    .top-news-ticker {
+      position: sticky;
+      top: 0;
+      z-index: 10000;
+      width: 100%;
+      height: var(--ticker-height);
+      background: #000000;
+      border-bottom: 1px solid #1e293b;
+      overflow: hidden;
+    }
+
+    .top-news-ticker iframe {
+      width: 100%;
+      height: var(--ticker-height);
+      border: 0;
+      display: block;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: var(--ticker-height);
+      z-index: 9999;
+      height: var(--nav-height);
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .top-nav-inner {
+      max-width: 1200px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-nav a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: #334155;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .top-nav a:hover {
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px 36px;
+    }
+
+    .dashboard-title {
+      margin-bottom: 30px;
+    }
+
+    .dashboard-title h2 {
+      margin: 0;
+      font-size: 34px;
+      color: var(--heading);
+    }
+
+    .dashboard-title p {
+      max-width: 850px;
+      margin-top: 8px;
+      color: #3f5873;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .dashboard-section {
+      margin-bottom: 44px;
+      scroll-margin-top: calc(var(--ticker-height) + var(--nav-height) + 20px);
+    }
+
+    .section-header {
+      margin-bottom: 18px;
+    }
+
+    .section-label {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 26px;
+      color: var(--heading);
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 760px) minmax(0, 380px);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+      margin-top: 24px;
+    }
+
+    .rates-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .widget-card {
+      background: var(--card);
+      border: 1px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .widget-header h3 {
+      margin: 0;
+      font-size: 19px;
+      color: var(--heading);
+    }
+
+    .widget-header p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .status-badge {
+      flex-shrink: 0;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #e6f7ed;
+      color: #137333;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .iframe-wrapper,
+    .summary-wrapper,
+    .chart-wrapper,
+    .rates-wrapper,
+    .news-board-wrapper {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--wrapper-bg);
+      overflow: hidden;
+    }
+
+    .iframe-wrapper {
+      padding: 10px;
+      overflow-x: auto;
+    }
+
+    .iframe-wrapper iframe {
+      display: block;
+      width: 650px;
+      max-width: none;
+      height: 467px;
+      margin: 0 auto;
+      border: 0;
+    }
+
+    .summary-wrapper {
+      padding: 10px;
+      overflow-x: auto;
+    }
+
+    .summary-wrapper iframe {
+      display: block;
+      width: 317px;
+      height: 467px;
+      margin: 0 auto;
+      border: 0;
+    }
+
+    .news-board-wrapper {
+      height: 500px;
+    }
+
+    .news-board-wrapper iframe {
+      width: 100%;
+      height: 500px;
+      border: 0;
+      display: block;
+    }
+
+    .chart-wrapper {
+      padding: 8px;
+    }
+
+    .chart-wrapper iframe {
+      display: block;
+      width: 100%;
+      height: 430px;
+      border: 0;
+    }
+
+    .rates-wrapper {
+      padding: 16px;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .rates-wrapper iframe {
+      display: block;
+      margin: 0 auto;
+      border: 0;
+    }
+
+    .rates-note {
+      background: var(--wrapper-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .rates-note strong {
+      color: var(--heading);
+    }
+
+    .powered-by {
+      margin-top: 10px;
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11px;
+      color: #334155;
+    }
+
+    .powered-by a {
+      color: #06529D;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .powered-by a:hover {
+      text-decoration: underline;
+    }
+
+    .source-footer {
+      border-top: 1px solid var(--border);
+      margin-top: 30px;
+      padding: 22px 0 6px;
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .source-footer strong {
+      color: var(--heading);
+    }
+
+    .source-footer a {
+      color: var(--accent);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .source-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1050px) {
+      .institution-header-inner {
+        gap: 40px;
+        padding: 18px 24px;
+      }
+
+      .institution-logo {
+        width: 220px;
+      }
+
+      .section-grid,
+      .chart-grid,
+      .rates-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-wrapper iframe {
+        height: 460px;
+      }
+
+      .news-board-wrapper {
+        height: 500px;
+      }
+
+      .news-board-wrapper iframe {
+        height: 500px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --nav-height: 48px;
+      }
+
+      .institution-header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px 14px;
+      }
+
+      .institution-logo {
+        width: 190px;
+      }
+
+      .institution-title {
+        text-align: left;
+        margin-left: 0;
+      }
+
+      .institution-title h1 {
+        font-size: 22px;
+      }
+
+      .page {
+        padding: 24px 14px 36px;
+      }
+
+      .top-nav-inner {
+        padding: 0 14px;
+      }
+
+      .dashboard-title h2 {
+        font-size: 27px;
+      }
+
+      .widget-card {
+        padding: 16px;
+      }
+
+      .widget-header {
+        flex-direction: column;
+      }
+
+      .section-header h2 {
+        font-size: 22px;
+      }
+
+      .news-board-wrapper {
+        height: 430px;
+      }
+
+      .news-board-wrapper iframe {
+        height: 430px;
+      }
+
+      .chart-wrapper iframe {
+        height: 420px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="institution-header">
+    <div class="institution-header-inner">
+      <img
+        class="institution-logo"
+        src="https://mped.gov.eg/AdminPanel/sharedImages/f00414d1-c2dc-4d85-9f17-97e3d85d9e23_MPED-Egypt-logo_b85.png"
+        alt="MPED logo">
+
+      <div class="institution-title">
+        <h1>Internal Monitoring Dashboard</h1>
+        <p>International markets, macro shocks, and global risk signals</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="top-news-ticker">
+    <iframe
+      src="https://rss.app/embed/v1/ticker/EdzqQycvEjk7OVlF"
+      frameborder="0">
+    </iframe>
+  </div>
+
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="#global">Global</a>
+      <a href="#energy">Energy</a>
+      <a href="#food">Food</a>
+      <a href="#fx">FX</a>
+      <a href="#rates">Rates</a>
+      <a href="#risk">Risk</a>
+    </div>
+  </nav>
+
+  <main class="page">
+
+    <header class="dashboard-title">
+      <h2>International Shock Monitor</h2>
+      <p>
+        Live international indicators covering macro events, commodities, currencies,
+        rates, and global risk sentiment.
+      </p>
+    </header>
+
+    <section id="global" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-label">Section 1</span>
+        <h2>Global Shock Watch</h2>
+      </div>
+
+      <div class="section-grid">
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Economic Calendar</h3>
+              <p>High-importance scheduled events.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="iframe-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&category=_employment,_economicActivity,_inflation,_centralBanks,_balance,_Bonds&importance=3&features=datepicker,timezone,filters&countries=25,32,6,37,59,72,22,17,14,10,35,56,52,110,63,61,143,4,5&calType=week&timeZone=65&lang=1"
+              frameborder="0"
+              allowtransparency="true"
+              marginwidth="0"
+              marginheight="0">
+            </iframe>
+          </div>
+
+          <div class="powered-by">
+            Real Time Economic Calendar provided by
+            <a href="https://www.investing.com/" rel="nofollow" target="_blank">Investing.com</a>.
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Market Stress Snapshot</h3>
+              <p>Technical summary across major markets.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="summary-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltsw.investing.com?lang=1&forex=1,2,3,5,7,9,10&commodities=8830,8836,8831,8849,8833,8862,8832&indices=175,166,172,27,179,170,174&stocks=345,346,347,348,349,350,352&tabs=2,1,3,4">
+            </iframe>
+          </div>
+
+          <div class="powered-by">
+            Technical Summary Widget Powered by
+            <a href="https://www.investing.com/" rel="nofollow" target="_blank">Investing.com</a>.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="energy" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-label">Section 2</span>
+        <h2>Energy & Fuel Shock Monitor</h2>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-header">
+          <div>
+            <h3>Commodities News</h3>
+            <p>Energy and commodity headlines.</p>
+          </div>
+          <span class="status-badge">RSS</span>
+        </div>
+
+        <div class="news-board-wrapper">
+          <iframe
+            loading="lazy"
+            src="https://rss.app/embed/v1/imageboard/4nvMBQtCLC6OxURo"
+            frameborder="0">
+          </iframe>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Brent Oil</h3>
+              <p>Fuel costs, import bill, and fiscal exposure.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8833&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Natural Gas</h3>
+              <p>Energy-market and input-cost pressure.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8862&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="food" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-label">Section 3</span>
+        <h2>Food & Agricultural Commodities Monitor</h2>
+      </div>
+
+      <div class="chart-grid">
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Wheat</h3>
+              <p>Bread subsidy, food security, and import costs.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8917&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Corn</h3>
+              <p>Feed costs and food-inflation pass-through.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8918&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Soybeans</h3>
+              <p>Food oils and feed-market pressure.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8916&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Oats</h3>
+              <p>Broader cereal and feed-price signal.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=959199&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="fx" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-label">Section 4</span>
+        <h2>FX & External Financing Pressure</h2>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-header">
+          <div>
+            <h3>Currency & FX News</h3>
+            <p>Currency-market headlines.</p>
+          </div>
+          <span class="status-badge">RSS</span>
+        </div>
+
+        <div class="news-board-wrapper">
+          <iframe
+            loading="lazy"
+            src="https://rss.app/embed/v1/imageboard/SzjP89Q1n6uM1EFN"
+            frameborder="0">
+          </iframe>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>USD/EGP</h3>
+              <p>Direct exchange-rate pressure.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=2122&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>EUR/EGP</h3>
+              <p>European trade, tourism, and import-cost channel.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=1634&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>US Dollar Index Futures</h3>
+              <p>Global dollar-strength proxy.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8827&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>USD/JPY</h3>
+              <p>Liquidity, dollar, and carry-trade signal.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=3&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="rates" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-label">Section 5</span>
+        <h2>Interest Rates & Global Financing Conditions</h2>
+      </div>
+
+      <div class="rates-grid">
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Global Interest Rates</h3>
+              <p>Key international policy-rate snapshot.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="rates-wrapper">
+            <iframe
+              loading="lazy"
+              frameborder="0"
+              scrolling="no"
+              height="82"
+              width="231"
+              allowtransparency="true"
+              marginwidth="0"
+              marginheight="0"
+              src="https://sslirates.investing.com/index.php?rows=2&bg1=FFFFFF&bg2=F1F5F8&text_color=333333&enable_border=show&border_color=0452A1&header_bg=0452A1&header_text=FFFFFF&force_lang=1"
+              align="center">
+            </iframe>
+
+            <div class="powered-by">
+              Interest Rates powered by
+              <a href="https://www.investing.com/" rel="nofollow" target="_blank">Investing.com</a>.
+            </div>
+          </div>
+        </div>
+
+        <div class="rates-note">
+          <strong>Monitoring focus:</strong>
+          global rates affect borrowing costs, portfolio flows, dollar strength,
+          and broader financing pressure.
+        </div>
+
+      </div>
+    </section>
+
+    <section id="risk" class="dashboard-section">
+      <div class="section-header">
+        <span class="section-label">Section 6</span>
+        <h2>Global Risk Sentiment Monitor</h2>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-header">
+          <div>
+            <h3>Stock Market News</h3>
+            <p>Equity-market risk sentiment headlines.</p>
+          </div>
+          <span class="status-badge">RSS</span>
+        </div>
+
+        <div class="news-board-wrapper">
+          <iframe
+            loading="lazy"
+            src="https://rss.app/embed/v1/imageboard/yV3CZJOBDlCdYzGR"
+            frameborder="0">
+          </iframe>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>Gold</h3>
+              <p>Safe-haven and geopolitical-risk signal.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=8830&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>S&P 500</h3>
+              <p>Broad global risk-appetite signal.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=166&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+        <div class="widget-card">
+          <div class="widget-header">
+            <div>
+              <h3>VIX</h3>
+              <p>Market-fear and volatility signal.</p>
+            </div>
+            <span class="status-badge">Live</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <iframe
+              loading="lazy"
+              src="https://ssltvc.investing.com/?pair_ID=44336&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+            </iframe>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="source-footer">
+      <strong>Sources:</strong>
+      <a href="https://www.investing.com/" rel="nofollow" target="_blank">Investing.com</a>
+      and
+      <a href="https://www.tradingview.com/" rel="nofollow" target="_blank">TradingView.com</a>.
+    </footer>
+
+  </main>
+</body>
+
+</html>
