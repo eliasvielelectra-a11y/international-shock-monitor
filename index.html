@@ -20,7 +20,6 @@
       --accent: #0f4c81;
       --accent-bg: #e4f0fb;
       --navy: #0f172a;
-      --navy-soft: #162338;
       --shadow: 0 12px 30px rgba(15, 23, 42, 0.09);
       --ticker-height: 46px;
       --nav-height: 52px;
@@ -32,6 +31,7 @@
 
     html {
       scroll-behavior: smooth;
+      overflow-x: hidden;
     }
 
     body {
@@ -39,6 +39,11 @@
       font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
+      overflow-x: hidden;
+    }
+
+    iframe {
+      max-width: 100%;
     }
 
     .institution-header {
@@ -111,6 +116,7 @@
       backdrop-filter: blur(8px);
       overflow-x: auto;
       white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
     }
 
     .top-nav-inner {
@@ -133,6 +139,7 @@
       text-decoration: none;
       font-size: 13px;
       font-weight: 700;
+      flex: 0 0 auto;
     }
 
     .top-nav a:hover {
@@ -197,6 +204,7 @@
       grid-template-columns: minmax(0, 760px) minmax(0, 380px);
       gap: 24px;
       align-items: start;
+      min-width: 0;
     }
 
     .chart-grid {
@@ -205,6 +213,7 @@
       gap: 24px;
       align-items: start;
       margin-top: 24px;
+      min-width: 0;
     }
 
     .rates-grid {
@@ -212,9 +221,11 @@
       grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
       gap: 24px;
       align-items: start;
+      min-width: 0;
     }
 
     .widget-card {
+      min-width: 0;
       background: var(--card);
       border: 1px solid var(--border-soft);
       border-radius: 18px;
@@ -259,6 +270,7 @@
     .rates-wrapper,
     .news-board-wrapper {
       width: 100%;
+      min-width: 0;
       border: 1px solid var(--border);
       border-radius: 14px;
       background: var(--wrapper-bg);
@@ -267,13 +279,12 @@
 
     .iframe-wrapper {
       padding: 10px;
-      overflow-x: auto;
     }
 
     .iframe-wrapper iframe {
       display: block;
-      width: 650px;
-      max-width: none;
+      width: 100%;
+      max-width: 650px;
       height: 467px;
       margin: 0 auto;
       border: 0;
@@ -281,12 +292,12 @@
 
     .summary-wrapper {
       padding: 10px;
-      overflow-x: auto;
     }
 
     .summary-wrapper iframe {
       display: block;
-      width: 317px;
+      width: 100%;
+      max-width: 317px;
       height: 467px;
       margin: 0 auto;
       border: 0;
@@ -318,6 +329,7 @@
       padding: 16px;
       text-align: center;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .rates-wrapper iframe {
@@ -401,10 +413,7 @@
         height: 460px;
       }
 
-      .news-board-wrapper {
-        height: 500px;
-      }
-
+      .news-board-wrapper,
       .news-board-wrapper iframe {
         height: 500px;
       }
@@ -435,40 +444,134 @@
         font-size: 22px;
       }
 
+      .institution-title p {
+        font-size: 12px;
+      }
+
       .page {
-        padding: 24px 14px 36px;
+        padding: 24px 12px 36px;
       }
 
       .top-nav-inner {
-        padding: 0 14px;
+        padding: 0 12px;
+        justify-content: flex-start;
+      }
+
+      .top-nav a {
+        font-size: 12px;
+        padding: 0 10px;
+      }
+
+      .dashboard-title {
+        margin-bottom: 26px;
       }
 
       .dashboard-title h2 {
-        font-size: 27px;
+        font-size: 26px;
+      }
+
+      .dashboard-title p {
+        font-size: 14px;
+      }
+
+      .dashboard-section {
+        margin-bottom: 36px;
       }
 
       .widget-card {
-        padding: 16px;
+        padding: 14px;
+        border-radius: 14px;
       }
 
       .widget-header {
         flex-direction: column;
+        gap: 8px;
+      }
+
+      .widget-header h3 {
+        font-size: 17px;
+      }
+
+      .widget-header p {
+        font-size: 12px;
       }
 
       .section-header h2 {
         font-size: 22px;
       }
 
+      .iframe-wrapper,
+      .summary-wrapper,
+      .chart-wrapper,
+      .rates-wrapper,
       .news-board-wrapper {
-        height: 430px;
+        border-radius: 12px;
       }
 
+      .iframe-wrapper,
+      .summary-wrapper {
+        padding: 6px;
+      }
+
+      .iframe-wrapper iframe,
+      .summary-wrapper iframe,
+      .chart-wrapper iframe,
+      .news-board-wrapper iframe {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .iframe-wrapper iframe {
+        height: 520px;
+      }
+
+      .summary-wrapper iframe {
+        height: 520px;
+      }
+
+      .news-board-wrapper,
       .news-board-wrapper iframe {
         height: 430px;
       }
 
       .chart-wrapper iframe {
-        height: 420px;
+        height: 360px;
+      }
+
+      .rates-note {
+        padding: 14px;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .page {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .widget-card {
+        padding: 10px;
+      }
+
+      .dashboard-title h2 {
+        font-size: 24px;
+      }
+
+      .section-header h2 {
+        font-size: 20px;
+      }
+
+      .iframe-wrapper iframe {
+        height: 560px;
+      }
+
+      .summary-wrapper iframe {
+        height: 540px;
+      }
+
+      .chart-wrapper iframe {
+        height: 330px;
       }
     }
   </style>
@@ -615,7 +718,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8833&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8833&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -632,7 +735,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8862&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8862&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -660,7 +763,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8917&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8917&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -677,7 +780,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8918&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8918&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -694,7 +797,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8916&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8916&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -711,7 +814,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=959199&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=959199&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -757,7 +860,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=2122&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=2122&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -774,7 +877,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=1634&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=1634&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -791,7 +894,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8827&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8827&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -808,7 +911,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=3&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=3&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -901,7 +1004,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=8830&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=8830&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -918,7 +1021,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=166&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=166&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
@@ -935,7 +1038,7 @@
           <div class="chart-wrapper">
             <iframe
               loading="lazy"
-              src="https://ssltvc.investing.com/?pair_ID=44336&height=430&width=520&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
+              src="https://ssltvc.investing.com/?pair_ID=44336&height=430&interval=week&plotStyle=area&domain_ID=1&lang_ID=1&timezone_ID=7">
             </iframe>
           </div>
         </div>
