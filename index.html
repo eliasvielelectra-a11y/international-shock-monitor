@@ -36,6 +36,7 @@
 
     body {
       margin: 0;
+      padding-top: var(--ticker-height);
       font-family: Arial, Helvetica, sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -89,9 +90,11 @@
     }
 
     .top-news-ticker {
-      position: sticky;
+      position: fixed;
       top: 0;
-      z-index: 10000;
+      left: 0;
+      right: 0;
+      z-index: 30000;
       width: 100%;
       height: var(--ticker-height);
       background: #000000;
@@ -109,7 +112,7 @@
     .top-nav {
       position: sticky;
       top: var(--ticker-height);
-      z-index: 9999;
+      z-index: 29999;
       height: var(--nav-height);
       background: rgba(255, 255, 255, 0.96);
       border-bottom: 1px solid var(--border);
@@ -370,6 +373,110 @@
       text-decoration: underline;
     }
 
+    .carousel-controls {
+      margin: 0 0 24px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      position: relative;
+    }
+
+    .carousel-status {
+      min-width: 0;
+    }
+
+    .carousel-status strong {
+      display: block;
+      color: var(--heading);
+      font-size: 14px;
+    }
+
+    .carousel-status span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .carousel-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .carousel-buttons button,
+    .carousel-buttons select {
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #334155;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .carousel-buttons button {
+      padding: 0 12px;
+    }
+
+    .carousel-buttons select {
+      padding: 0 28px 0 10px;
+    }
+
+    .carousel-buttons button:hover,
+    .carousel-buttons select:hover {
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .carousel-progress {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 0;
+      height: 3px;
+      overflow: hidden;
+      background: #e2e8f0;
+      border-radius: 999px;
+    }
+
+    .carousel-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+    }
+
+    body.carousel-mode .dashboard-section {
+      display: none;
+    }
+
+    body.carousel-mode .dashboard-section.active-section {
+      display: block;
+      animation: sectionFade 420ms ease;
+    }
+
+    @keyframes sectionFade {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .source-footer {
       border-top: 1px solid var(--border);
       margin-top: 30px;
@@ -542,6 +649,23 @@
         padding: 14px;
         font-size: 13px;
       }
+
+      .carousel-controls {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .carousel-buttons {
+        overflow-x: auto;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .carousel-buttons button,
+      .carousel-buttons select {
+        flex: 0 0 auto;
+      }
     }
 
     @media (max-width: 430px) {
@@ -621,7 +745,37 @@
       </p>
     </header>
 
-    <section id="global" class="dashboard-section">
+    <div class="carousel-controls" aria-label="Dashboard carousel controls">
+      <div class="carousel-status">
+        <strong id="carousel-title">Global Shock Watch</strong>
+        <span id="carousel-meta">Section 1 of 6 · Auto-rotates every 90 seconds</span>
+      </div>
+
+      <div class="carousel-buttons">
+        <button type="button" id="carousel-prev">Previous</button>
+        <button type="button" id="carousel-toggle">Pause</button>
+        <button type="button" id="carousel-next">Next</button>
+        <select id="carousel-select" aria-label="Jump to section">
+          <option value="0">Global</option>
+          <option value="1">Energy News</option>
+          <option value="2">Energy Graphs</option>
+          <option value="3">Food Graphs 1</option>
+          <option value="4">Food Graphs 2</option>
+          <option value="5">FX News</option>
+          <option value="6">FX Graphs 1</option>
+          <option value="7">FX Graphs 2</option>
+          <option value="8">Risk News</option>
+          <option value="9">Risk Graphs 1</option>
+          <option value="10">Risk Graphs 2</option>
+        </select>
+      </div>
+
+      <div class="carousel-progress" aria-hidden="true">
+        <div class="carousel-progress-bar" id="carousel-progress-bar"></div>
+      </div>
+    </div>
+
+    <section id="global" class="dashboard-section active-section">
       <div class="section-header">
         <span class="section-label">Section 1</span>
         <h2>Global Shock Watch</h2>
@@ -1046,14 +1200,243 @@
       </div>
     </section>
 
-    <footer class="source-footer">
-      <strong>Sources:</strong>
-      <a href="https://www.investing.com/" rel="nofollow" target="_blank">Investing.com</a>
-      and
-      <a href="https://www.tradingview.com/" rel="nofollow" target="_blank">TradingView.com</a>.
-    </footer>
 
   </main>
+  <script>
+    const carouselSections = Array.from(document.querySelectorAll(".dashboard-section"));
+    const carouselTitle = document.getElementById("carousel-title");
+    const carouselMeta = document.getElementById("carousel-meta");
+    const carouselProgressBar = document.getElementById("carousel-progress-bar");
+    const carouselPrev = document.getElementById("carousel-prev");
+    const carouselNext = document.getElementById("carousel-next");
+    const carouselToggle = document.getElementById("carousel-toggle");
+    const carouselSelect = document.getElementById("carousel-select");
+
+    const carouselDelay = 60000; // 60 seconds. Change to 120000 for 2 minutes.
+    let carouselIndex = 0;
+    let carouselTimer = null;
+    let progressTimer = null;
+    let isCarouselRunning = true;
+    let slideStartedAt = Date.now();
+
+    const carouselSlides = [
+      {
+        title: "Global Shock Watch",
+        sectionId: "global",
+        type: "full"
+      },
+      {
+        title: "Energy News",
+        sectionId: "energy",
+        type: "news"
+      },
+      {
+        title: "Energy Graphs: Brent Oil & Natural Gas",
+        sectionId: "energy",
+        type: "charts",
+        charts: [0, 1]
+      },
+      {
+        title: "Food Graphs: Wheat & Corn",
+        sectionId: "food",
+        type: "charts",
+        charts: [0, 1]
+      },
+      {
+        title: "Food Graphs: Soybeans & Oats",
+        sectionId: "food",
+        type: "charts",
+        charts: [2, 3]
+      },
+      {
+        title: "FX News",
+        sectionId: "fx",
+        type: "news"
+      },
+      {
+        title: "FX Graphs: USD/EGP & EUR/EGP",
+        sectionId: "fx",
+        type: "charts",
+        charts: [0, 1]
+      },
+      {
+        title: "FX Graphs: Dollar Index & USD/JPY",
+        sectionId: "fx",
+        type: "charts",
+        charts: [2, 3]
+      },
+      {
+        title: "Risk Sentiment News",
+        sectionId: "risk",
+        type: "news"
+      },
+      {
+        title: "Risk Graphs: Gold & S&P 500",
+        sectionId: "risk",
+        type: "charts",
+        charts: [0, 1]
+      },
+      {
+        title: "Risk Graphs: Gold & VIX",
+        sectionId: "risk",
+        type: "charts",
+        charts: [0, 2]
+      }
+    ];
+
+    document.body.classList.add("carousel-mode");
+
+    function resetSectionContent(section) {
+      const directCards = Array.from(section.children).filter((child) => child.classList.contains("widget-card"));
+      const chartGrid = section.querySelector(".chart-grid");
+      const chartCards = Array.from(section.querySelectorAll(".chart-grid > .widget-card"));
+
+      directCards.forEach((card) => {
+        card.style.display = "";
+      });
+
+      if (chartGrid) {
+        chartGrid.style.display = "";
+      }
+
+      chartCards.forEach((card) => {
+        card.style.display = "";
+      });
+    }
+
+    function applySlideContent(slide) {
+      const section = document.getElementById(slide.sectionId);
+      if (!section) return;
+
+      const directCards = Array.from(section.children).filter((child) => child.classList.contains("widget-card"));
+      const chartGrid = section.querySelector(".chart-grid");
+      const chartCards = Array.from(section.querySelectorAll(".chart-grid > .widget-card"));
+
+      directCards.forEach((card) => {
+        card.style.display = "none";
+      });
+
+      if (chartGrid) {
+        chartGrid.style.display = "none";
+      }
+
+      chartCards.forEach((card) => {
+        card.style.display = "none";
+      });
+
+      if (slide.type === "news") {
+        if (directCards[0]) {
+          directCards[0].style.display = "block";
+        }
+        return;
+      }
+
+      if (slide.type === "charts") {
+        if (chartGrid) {
+          chartGrid.style.display = "grid";
+        }
+
+        chartCards.forEach((card, cardIndex) => {
+          card.style.display = slide.charts.includes(cardIndex) ? "block" : "none";
+        });
+        return;
+      }
+
+      directCards.forEach((card) => {
+        card.style.display = "block";
+      });
+
+      if (chartGrid) {
+        chartGrid.style.display = "grid";
+      }
+
+      chartCards.forEach((card) => {
+        card.style.display = "block";
+      });
+    }
+
+    function showCarouselSection(index) {
+      carouselIndex = (index + carouselSlides.length) % carouselSlides.length;
+      const activeSlide = carouselSlides[carouselIndex];
+
+      carouselSections.forEach((section) => {
+        resetSectionContent(section);
+        section.classList.toggle("active-section", section.id === activeSlide.sectionId);
+      });
+
+      applySlideContent(activeSlide);
+
+      carouselTitle.textContent = activeSlide.title;
+      carouselMeta.textContent = `Slide ${carouselIndex + 1} of ${carouselSlides.length} · Auto-rotates every ${Math.round(carouselDelay / 1000)} seconds`;
+      carouselSelect.value = String(carouselIndex);
+      slideStartedAt = Date.now();
+      carouselProgressBar.style.width = "0%";
+
+    }
+
+    function nextCarouselSection() {
+      showCarouselSection(carouselIndex + 1);
+    }
+
+    function previousCarouselSection() {
+      showCarouselSection(carouselIndex - 1);
+    }
+
+    function startCarousel() {
+      stopCarouselTimers();
+      isCarouselRunning = true;
+      carouselToggle.textContent = "Pause";
+      slideStartedAt = Date.now();
+
+      carouselTimer = setInterval(nextCarouselSection, carouselDelay);
+      progressTimer = setInterval(updateCarouselProgress, 500);
+    }
+
+    function stopCarouselTimers() {
+      clearInterval(carouselTimer);
+      clearInterval(progressTimer);
+      carouselTimer = null;
+      progressTimer = null;
+    }
+
+    function pauseCarousel() {
+      isCarouselRunning = false;
+      carouselToggle.textContent = "Resume";
+      stopCarouselTimers();
+    }
+
+    function updateCarouselProgress() {
+      const elapsed = Date.now() - slideStartedAt;
+      const percentage = Math.min((elapsed / carouselDelay) * 100, 100);
+      carouselProgressBar.style.width = `${percentage}%`;
+    }
+
+    carouselPrev.addEventListener("click", () => {
+      previousCarouselSection();
+      if (isCarouselRunning) startCarousel();
+    });
+
+    carouselNext.addEventListener("click", () => {
+      nextCarouselSection();
+      if (isCarouselRunning) startCarousel();
+    });
+
+    carouselToggle.addEventListener("click", () => {
+      if (isCarouselRunning) {
+        pauseCarousel();
+      } else {
+        startCarousel();
+      }
+    });
+
+    carouselSelect.addEventListener("change", (event) => {
+      showCarouselSection(Number(event.target.value));
+      if (isCarouselRunning) startCarousel();
+    });
+
+    showCarouselSection(0);
+    startCarousel();
+  </script>
 </body>
 
 </html>
